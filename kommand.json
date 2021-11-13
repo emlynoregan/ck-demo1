@@ -1,0 +1,58 @@
+{
+    "components": {
+        "policy": {
+            "type": "@foundation.policy",
+            "policy_name": "ck_tutorial_policy",
+            "description": "CloudKommand Tutorial Policy",
+            "document": {
+                "Version": "2012-10-17",
+                "Statement": [{
+                    "Sid": "Vis",
+                    "Effect": "Allow",
+                    "Action": [
+                        "lambda:*",
+                        "events:*",
+                        "dynamodb:*",
+                        "sns:*"
+                    ],
+                    "Resource": "*"
+                }]
+            }
+        },
+        "role": {
+            "type": "@foundation.role",
+            "role_name": "ck_tutorial_role",
+            "policies": [
+                "@policy"
+            ],
+            "description": "CloudKommand Tutorial Role"
+        },
+        "lambda": {
+            "type": "@foundation.lambda",
+            "description": "CloudKommand Tutorial Lambda",
+            "function_name": "ck_tutorial_lambda",
+            "timeout": 10,
+            "role": "@role",
+            "environment_variables": {
+                "table_name": "@table:props.table_name"
+            }
+        },
+        "table": {
+            "type": "@foundation.table",
+            "table_name": "ck_tutorial_table"
+        },
+        "api": {
+            "type": "@foundation.api",
+            "api_name": "ck_tutorial_api",
+            "resources": {
+                "/{proxy+}": {
+                    "ANY": "@lambda:props.function_arn"
+                }
+            },
+            "cors_enabled": true
+        }
+    },
+    "repos": {
+        "foundation": "https://github.com/cloudkommand/foundation"
+    }
+}
